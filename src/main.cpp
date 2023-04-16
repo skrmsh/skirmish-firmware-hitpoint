@@ -8,9 +8,10 @@ void setup() {
     logInfo("Logging Initialized, welcome!");
     hitpointInit();
 
-    hitpointSetColor(HP_ADDR, 255, 0, 255);
-    hitpointSelectAnimation(HP_ADDR, HP_ANIM_BLINK);
-    hitpointSetAnimationSpeed(HP_ADDR, 75);
+    // Breathing to indicate SYSSTATE_UNINIT
+    hitpointSetColor(HP_ADDR, 233, 30, 99);
+    hitpointSelectAnimation(HP_ADDR, HP_ANIM_BREATHE);
+    hitpointSetAnimationSpeed(HP_ADDR, 2);
 }
 
 void loop() {
