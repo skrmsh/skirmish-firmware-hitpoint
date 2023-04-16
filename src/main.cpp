@@ -48,14 +48,14 @@ void handleComData(const uint8_t *data) {
         for (uint8_t i = 0; i < (sizeof(recentHits) / sizeof(recentHits[0])); i++) {
             // shot in recent hits
             if (recentHits[i] == shot) {
-                cooldownUntil = millis() + (data[3] * 1000);
+                cooldownUntil = millis() + (data[5] * 1000);
                 currentState = SYSSTATE_COOLDOWN;
 
                 hitpointSetColor(HP_ADDR, 255, 255, 255);
                 hitpointSelectAnimation(HP_ADDR, HP_ANIM_BLINK);
                 hitpointSetAnimationSpeed(HP_ADDR, 15);
 
-                logInfo("CMD: GOT HIT - Done. Cooling down for %d seconds.", data[3]);
+                logInfo("CMD: GOT HIT - Done. Cooling down for %d seconds.", data[5]);
                 break;
             }
         }
