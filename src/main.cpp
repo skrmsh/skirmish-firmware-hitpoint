@@ -54,6 +54,10 @@ void handleComData(const uint8_t *data) {
                 cooldownUntil = millis() + (data[5] * 1000);
                 currentState = SYSSTATE_COOLDOWN;
 
+                // Removing this hit from recent hits, to prevent
+                // a second CMD_HIT_VALID for this hit.
+                recentHits[i] = 0;
+
                 hitpointSetColor(HP_ADDR, 255, 255, 255);
                 hitpointSelectAnimation(HP_ADDR, HP_ANIM_BLINK);
                 hitpointSetAnimationSpeed(HP_ADDR, 15);
