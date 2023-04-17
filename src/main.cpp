@@ -31,7 +31,8 @@ void handleComData(const uint8_t *data) {
     if (mode != hitpointMode) {
         return; // Not for me
     }
-    if (cmd == 0x01) { // SYS INIT
+    if (cmd == CMD_SYS_INIT) {
+        logInfo("CMD: SYS_INIT");
         currentState = SYSSTATE_IDLE;
         color_r = data[2];
         color_g = data[3];
@@ -39,15 +40,17 @@ void handleComData(const uint8_t *data) {
         hitpointSetColor(HP_ADDR, color_r, color_g, color_b);
         hitpointSelectAnimation(HP_ADDR, HP_ANIM_SOLID);
         hitpointSetAnimationSpeed(HP_ADDR, 1);
-        logInfo("CMD: SYS INIT - Done. Color: #%02x%02x%02x", color_r, color_g, color_b);
-    } else if (cmd == 0x02) { // GOT HIT
+        logDebug("-> Color: #%02x%02x%02x", color_r, color_g, color_b);
+    } else if (cmd == CMD_HIT_VALID) {
         // Check if the hit was at this hitpoint
+        logInfo("CMD: HIT_VALID");
         uint8_t pid = data[2];
         uint16_t sid = data[3] | (data[4] << 8);
         uint32_t shot = shotSignature(pid, sid);
         for (uint8_t i = 0; i < (sizeof(recentHits) / sizeof(recentHits[0])); i++) {
             // shot in recent hits
             if (recentHits[i] == shot) {
+                logDebug("-> Was recently hit by this show!");
                 cooldownUntil = millis() + (data[5] * 1000);
                 currentState = SYSSTATE_COOLDOWN;
 
@@ -55,7 +58,7 @@ void handleComData(const uint8_t *data) {
                 hitpointSelectAnimation(HP_ADDR, HP_ANIM_BLINK);
                 hitpointSetAnimationSpeed(HP_ADDR, 15);
 
-                logInfo("CMD: GOT HIT - Done. Cooling down for %d seconds.", data[5]);
+                logDebug("-> Cooling down for %d seconds.", data[5]);
                 break;
             }
         }
@@ -81,6 +84,7 @@ void setup() {
 bool hitpointEvent = false;
 uint32_t now = 0;
 uint32_t lastReceivedShot = 0;
+
 void loop() {
     hitpointEvent = hitpointEventTriggered();
     now = millis();
@@ -94,6 +98,7 @@ void loop() {
             comGotHit(hitpointMode, getPIDFromShot(lastReceivedShot), getSIDFromShot(lastReceivedShot));
         }
     } else if (currentState == SYSSTATE_COOLDOWN) {
+        // Reset after cooldown
         if (now > cooldownUntil) {
             currentState = SYSSTATE_IDLE;
             hitpointSetColor(HP_ADDR, color_r, color_g, color_b);
