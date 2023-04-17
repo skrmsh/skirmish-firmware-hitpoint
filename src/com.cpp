@@ -57,14 +57,14 @@ void onReceive(const uint8_t *mac_addr, const uint8_t *data, int data_len) {
 void comGotHit(uint8_t hpMode, uint8_t pid, uint16_t sid) {
     const uint8_t peer_addr[6] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
     uint8_t data[6] = {
-        0x03,
+        CMD_GOT_HIT,
         hpMode,
         pid,
         sid & 0xff,
         (sid >> 8) & 0xff,
         0};
     esp_err_t result = esp_now_send(peer_addr, data, sizeof(data));
-    logDebug("Send CMD GOT HIT with result: %d (%d -> OK)", result, ESP_OK);
+    logDebug("Send CMD GOT_HIT with result: %d (%d -> OK)", result, ESP_OK);
 }
 
 void comInit(void (*cb)(const uint8_t *data)) {
